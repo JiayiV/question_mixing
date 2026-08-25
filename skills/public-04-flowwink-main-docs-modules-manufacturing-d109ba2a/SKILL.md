@@ -1,0 +1,81 @@
+---
+title: "Manufacturing Module"
+module_id: "manufacturing"
+version: "1.0.0"
+category: "data"
+autonomy: "agent-capable"
+generated: true
+generated_at: "2026-08-08"
+---
+
+# Manufacturing
+
+> MRP-light: Bills of Materials, Manufacturing Orders, component reservation, and the link from production demand to procurement.
+
+Ships with **14 agent skills**, an **admin UI**.
+
+## Quick Facts
+
+| Property | Value |
+|----------|-------|
+| **Module ID** | `manufacturing` |
+| **Version** | 1.0.0 |
+| **Category** | data |
+| **Autonomy** | agent-capable |
+| **Core** | No |
+| **Capabilities** | `data:write`, `data:read` |
+| **MCP-exposed skills** | 14 |
+| **Owns tables** | — |
+
+## Skills
+
+These skills are seeded into `agent_skills` when the module is enabled and exposed via MCP.
+External operators (FlowPilot, OpenClaw, Claude Desktop, custom MCP clients) can call them directly.
+
+| Skill | Scope | Description |
+|-------|-------|-------------|
+| `manage_bom` | internal | Create a new Bill of Materials (BOM) version for a product. Use when: defining what components make up a finished good, or adding a new versioned recipe. NOT for: planning a production run (use cre… |
+| `create_manufacturing_order` | internal | Plan a production run for a finished good. Creates a draft Manufacturing Order (MO). Use when: stock of a manufacturable product is low, a sales order needs to be built, or admin requests a build. … |
+| `confirm_manufacturing_order` | internal | Snapshot the active BOM into a draft MO and compute component availability. Use when: an MO has been created and is ready to be reserved. NOT for: starting work on the floor (use start_manufacturin… |
+| `check_mo_availability` | internal | Re-compute component availability for a confirmed MO and return any shortages. Read-only against state but updates the per-component cache. Use when: re-checking after a goods receipt, or before de… |
+| `trigger_procurement_for_mo` | internal | For each component short on stock, mark as awaiting_po and return a list of procurement requests. Idempotent — skips components that already have an open PO referencing this MO. Use when: check_mo_… |
+| `start_manufacturing_order` | internal | Transition a confirmed MO to in_progress and stamp started_at. Use when: floor operator (or agent with auto trust) confirms work has begun. NOT for: completing the MO (use complete_manufacturing_or… |
+| `complete_manufacturing_order` | internal | Finish an in-progress MO: post mo_consumption stock moves for components, mo_production for the finished good, set status=done, emit mo.completed. Use when: build is finished. NOT for: cancelling (… |
+| `cancel_manufacturing_order` | internal | Cancel a draft, confirmed, or in-progress MO with a reason. Idempotent — safe to call on already-cancelled or done MOs. Use when: order is no longer needed or build is abandoned. NOT for: finishing… |
+| `list_manufacturing_orders` | internal | List Manufacturing Orders, optionally filtered by status. Read-only. Use when: building a dashboard, triaging the queue, or summarizing factory load. NOT for: detailed component view (read mo_compo… |
+| `manage_work_center` | internal | Manage work centers (production resources with an hourly cost + capacity). Use when: defining the shop floor (cutting, assembly, packing), setting labor rates. NOT for: routing steps (manage_routin… |
+| `manage_routing_operation` | internal | Manage the ordered routing operations of a BOM (which work center, how many minutes per unit). Use when: defining how a product is made step by step. NOT for: work centers (manage_work_center) or g… |
+| `generate_mo_work_orders` | internal | Materialise a manufacturing order\ |
+| `progress_work_order` | internal | Run a manufacturing work order on the shop floor: start, pause, finish or cancel it, recording actual minutes and actual labor cost. Use when: reporting shop-floor progress or time spent on an oper… |
+| `mrp_reorder_run` | internal | Scan manufactured products (those with an active BOM) at/below their reorder point and create draft manufacturing orders to replenish. Use when: MRP planning, auto-replenishing made-in-house stock.… |
+
+## Module API Contract
+
+**Actions:** `list_mos`, `list_boms`, `get_mo`, `get_bom`
+
+**Input fields:** `action`, `mo_id`, `bom_id`, `status`
+
+**Output fields:** `success`, `message`
+
+## File Map
+
+| Purpose | Path |
+|---------|------|
+| Module definition | `src/lib/modules/manufacturing-module.ts` |
+| Hook | `src/hooks/useManufacturing.ts` |
+| Admin page | `src/pages/admin/ManufacturingPage.tsx` |
+
+## Contributing
+
+To enhance this module, see [Contributing Guide](../contributing/contributing.md).
+
+Key rules:
+- Follow `ModuleDefinition<I, O>` contract pattern
+- All schema changes require idempotent migrations
+- Skills must be self-describing ([Law 2](../concepts/openclaw-law.md))
+- Blocks are interfaces, not pipelines ([Law 3](../concepts/openclaw-law.md))
+- New skills must pass the [Agent Contract Integrity](../../mem/architecture/agent-contract-integrity.md) checklist (`bun run lint:skills`)
+
+---
+
+*This file is auto-generated by `scripts/generate-module-docs.ts`. Do not edit manually — re-run the script after changing the module definition.*
