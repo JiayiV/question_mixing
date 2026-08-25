@@ -6,15 +6,27 @@ directly into a compatible agent's skills location.
 
 ## Catalog
 
-The catalog currently contains 648 skill assets:
+The catalog currently contains approximately 10K skill assets (10,508
+`SKILL.md` files):
 
-- 427 upstream skills covering development, data, cloud, product, business,
-  communication, and other workflows.
-- 221 upstream agent instruction assets, exposed with an `agent-` prefix so
-  they can be discovered and installed through the same skill interface.
+- 648 assets originally collected from `github/awesome-copilot`.
+- 9,918 additional public instruction assets collected from
+  `anthropics/skills`, `affaan-m/ECC`, `alirezarezvani/claude-skills`,
+  `borghei/Claude-Skills`, `ShirleyHuang11/howto`, `magnusfroste/flowwink`,
+  `sandbaseai/sandbase-skills`, and
+  `panaversity/agentfactory-business-plugins`.
 
-Use the directory names as stable skill identifiers. Every entry contains a
-`SKILL.md` file with its own frontmatter, attribution, and usage instructions.
+The additional assets retain their public Markdown content and are normalized
+to one `SKILL.md` per directory for consistent discovery. `BUSINESS_INDEX.tsv`
+selects 8,195 assets matching the requested business areas:
+
+- contract, procurement, tender, bid, invoice, and document review
+- corporate finance, operations, investment, market, business, and technical analysis
+- enterprise supervision, governance, compliance, and audit
+- internal controls, investment controls, due diligence, and risk management
+
+Use the directory names as stable skill identifiers. Consult each asset for
+its original attribution and license information.
 
 ## Provenance
 

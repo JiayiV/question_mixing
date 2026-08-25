@@ -1,0 +1,85 @@
+---
+title: "CRM Module"
+module_id: "leads"
+version: "1.0.0"
+category: "data"
+autonomy: "view-required"
+generated: true
+generated_at: "2026-08-08"
+---
+
+# CRM
+
+> Create and manage leads
+
+Ships with **20 agent skills**, an **admin UI**.
+
+## Quick Facts
+
+| Property | Value |
+|----------|-------|
+| **Module ID** | `leads` |
+| **Version** | 1.0.0 |
+| **Category** | data |
+| **Autonomy** | view-required |
+| **Core** | No |
+| **Capabilities** | `content:receive`, `data:write`, `webhook:trigger` |
+| **MCP-exposed skills** | 20 |
+| **Owns tables** | — |
+
+## Skills
+
+These skills are seeded into `agent_skills` when the module is enabled and exposed via MCP.
+External operators (FlowPilot, OpenClaw, Claude Desktop, custom MCP clients) can call them directly.
+
+| Skill | Scope | Description |
+|-------|-------|-------------|
+| `add_lead` | both | Create a new lead in the CRM. Use when: create or add a new lead; capture a new prospect; a visitor submits contact info; importing leads from external sources. NOT for: updating existing leads (ma… |
+| `qualify_lead` | internal | Score and qualify a lead based on activities and engagement data. Use when: evaluating lead quality; automating lead scoring; prioritizing sales pipeline. NOT for: adding new leads (add_lead); mana… |
+| `enrich_company` | internal | Scrape a company website to enrich its record with website, phone, and description. Use when: needing more details about a prospect; automatically populating company data. NOT for: researching indi… |
+| `manage_leads` | internal | Full lead management: list, get, update status/score, delete leads. Use when: changing lead status; adding follow-up notes; cleaning up unqualified leads. NOT for: adding a new lead (add_lead); qua… |
+| `assign_lead` | internal | Assign a lead to a person — set who the seller/owner is. Takes the lead\ |
+| `assign_company` | internal | Set the account owner of a company — who is responsible for the account. Takes the company\ |
+| `crm_followup_report` | internal | What has slipped through the cracks: stale leads (no activity for N days), unassigned leads, and overdue project tasks — each with the responsible person\ |
+| `crm_task_list` | internal | List CRM tasks with optional filters for lead, deal, priority, and completion status. Use when: reviewing upcoming tasks; checking tasks for a specific lead; auditing task completion. NOT for: crea… |
+| `crm_task_create` | internal | Create a new CRM task with title, description, due date, priority, and optional lead/deal link. Use when: needing to follow up on a lead; assigning a task related to a deal; reminding agents about … |
+| `crm_task_update` | internal | Update an existing CRM task — change title, description, priority, due date, or mark as completed. Use when: modifying a pending task; marking a task as done; rescheduling a deadline. NOT for: crea… |
+| `competitor_monitor` | internal | Scan a competitor website and analyze their content strategy and positioning. Use when: user wants competitive analysis, studying competitor content. NOT for: migrating competitor sites (use migrat… |
+| `contact_finder` | internal | Find business contacts by company domain. Use when: prospecting by company domain, finding email addresses for outreach. NOT for: managing existing leads (use manage_leads). |
+| `send_email_to_lead` | internal | Send a one-to-one outreach, follow-up, or nurture email to a single lead via Resend. AI-drafts subject + body if not provided. Use when: reaching out to a specific lead, following up after lead act… |
+| `lead_pipeline_review` | internal | Reviews leads by status and score, suggests follow-up, and returns the weighted deal forecast (deal value × stage probability from the pipeline stage engine). Use when: heartbeat pipeline review, p… |
+| `manage_pipeline_stage` | internal | Manage configurable pipeline stages for leads, deals, or tickets (the shared stage engine). Use when: customizing a sales/support pipeline, adding/renaming stages, setting win probability. NOT for:… |
+| `find_duplicate_leads` | internal | Find likely duplicate leads by name similarity or matching email — normalizes plus-addressing and case so aliases collapse (anna+x@d ≡ anna+y@d ≡ anna@d) (read-only). Use when: cleaning the CRM, be… |
+| `merge_leads` | internal | Merge a duplicate lead into a primary one; reassigns every child record (tasks, deals, activities, invoices, quotes, tickets, webinar registrations) then deletes the duplicate. Pass the record to K… |
+| `manage_consent` | internal | GDPR consent center: record granted/revoked consent per contact email and type (marketing_email, newsletter, sms, profiling, analytics), check current state, read the full audit history. Use when: … |
+| `send_bulk_lead_email` | internal | Send one email to a whole lead segment (mass mail) with automatic unsubscribe-list and consent exclusions plus an unsubscribe footer link. Use when: announcing something to all opportunities, react… |
+| `predict_lead_score` | internal | Predictive lead scoring: estimate a lead\ |
+
+## Used in Processes
+
+This module participates in the following end-to-end business processes:
+
+- [lead-to-customer](../processes/lead-to-customer.md)
+
+## File Map
+
+| Purpose | Path |
+|---------|------|
+| Module definition | `src/lib/modules/crm-module.ts` |
+| Hook | `src/hooks/useLeads.ts` |
+| Admin page | `src/pages/admin/LeadsPage.tsx` |
+
+## Contributing
+
+To enhance this module, see [Contributing Guide](../contributing/contributing.md).
+
+Key rules:
+- Follow `ModuleDefinition<I, O>` contract pattern
+- All schema changes require idempotent migrations
+- Skills must be self-describing ([Law 2](../concepts/openclaw-law.md))
+- Blocks are interfaces, not pipelines ([Law 3](../concepts/openclaw-law.md))
+- New skills must pass the [Agent Contract Integrity](../../mem/architecture/agent-contract-integrity.md) checklist (`bun run lint:skills`)
+
+---
+
+*This file is auto-generated by `scripts/generate-module-docs.ts`. Do not edit manually — re-run the script after changing the module definition.*

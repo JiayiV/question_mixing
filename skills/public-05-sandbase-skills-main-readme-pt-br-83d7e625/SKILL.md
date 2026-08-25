@@ -1,0 +1,61 @@
+# SandBase Skills
+
+[![Estrelas no GitHub](https://img.shields.io/github/stars/sandbaseai/sandbase-skills?style=social)](https://github.com/sandbaseai/sandbase-skills/stargazers)
+[![Instalações no skills.sh](https://skills.sh/b/sandbaseai/sandbase-skills)](https://skills.sh/sandbaseai/sandbase-skills)
+
+[English](./README.md) | [中文](./README.zh-CN.md) | [日本語](./README.ja.md) | [한국어](./README.ko.md) | [Español](./README.es.md) | [Français](./README.fr.md) | [Deutsch](./README.de.md) | Português
+
+**88 Skills de Agent instaláveis** — Para pesquisa, inteligência social, marketing e workflows de negócios. O principal Skill de pesquisa funciona com as ferramentas de busca do agent e não exige uma conta SandBase; conecte o SandBase apenas quando precisar de fontes especializadas.
+
+Comece com `multi-source-search`: ele usa as ferramentas de busca existentes do agent e inclui um exemplo de registro de evidências e um validador offline. Se ele melhorar um workflow real, [dê uma estrela ao repositório](https://github.com/sandbaseai/sandbase-skills) para ajudar outros desenvolvedores a encontrá-lo.
+
+![Fluxo de pesquisa em múltiplas fontes: recursos de busca, rastreamento de origem, registro de evidências e validação offline](assets/multi-source-search-workflow.svg)
+
+## Início Rápido
+
+```bash
+# Gere o prompt completo do Skill sem instalar
+npx skills use sandbaseai/sandbase-skills@multi-source-search
+
+# Ou instale no Codex
+npx skills add sandbaseai/sandbase-skills --skill multi-source-search --agent codex
+
+# Use com as ferramentas web e de leitura de páginas do agent
+# "Verifique esta afirmação com fontes independentes e valide o registro de evidências"
+```
+
+### DeepSeek Harness
+
+Na raiz de um projeto DeepSeek Harness, execute:
+
+```bash
+npx --yes github:sandbaseai/sandbase-skills add multi-source-search
+dsh web
+```
+
+O instalador copia o Skill completo para `.dsh/skills/multi-source-search`, o diretório de descoberta do projeto. Ele é executado diretamente do GitHub, sem publicação no npm nem conta SandBase.
+
+## Categorias (88 Skills)
+
+| Categoria | Quantidade | Casos de uso |
+|-----------|-----------|--------------|
+| **Inteligência Social** | 14 | Twitter, YouTube, Instagram, TikTok, Reddit, Xiaohongshu |
+| **Busca & Pesquisa** | 17 | Multi-fonte, acadêmico, tendências, notícias |
+| **Inteligência de Negócios** | 20 | Empresas, competição, vendas, talentos |
+| **Marketing** | 15 | Marca, influenciadores, escuta social, crise |
+| **SEO** | 5 | Keywords, backlinks, SERP, auditoria |
+| **Ferramentas** | 17 | Email, domínios, screenshots, tradução |
+
+Lista completa no [README em inglês](./README.md#skill-catalog-88-skills).
+
+## Agents Suportados
+
+Claude Code, Codex, Cursor, Gemini CLI, OpenClaw, Hermes, Amp, Devin
+
+## Preços
+
+Os Skills são gratuitos e open source (Apache-2.0). `multi-source-search` não exige conta nem custos de API SandBase quando usa as ferramentas do agent; Skills especializados podem adicionar o SandBase conforme o uso.
+
+---
+
+**[SandBase Skills](https://github.com/sandbaseai/sandbase-skills)** — 88 Skills de Agent open source com fontes especializadas opcionais.

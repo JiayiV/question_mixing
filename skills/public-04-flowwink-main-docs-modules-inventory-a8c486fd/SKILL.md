@@ -1,0 +1,90 @@
+---
+title: "Inventory Module"
+module_id: "inventory"
+version: "2.1.0"
+category: "data"
+autonomy: "agent-capable"
+generated: true
+generated_at: "2026-08-08"
+---
+
+# Inventory
+
+> Multi-location inventory: locations, lots/serials, quants, reservations, transfers, MRP scheduler, and a full Pick & Pack flow that fulfills paid orders end-to-end.
+
+Ships with **16 agent skills**, an **admin UI**.
+
+## Quick Facts
+
+| Property | Value |
+|----------|-------|
+| **Module ID** | `inventory` |
+| **Version** | 2.1.0 |
+| **Category** | data |
+| **Autonomy** | agent-capable |
+| **Core** | No |
+| **Capabilities** | `data:read`, `data:write` |
+| **MCP-exposed skills** | 16 |
+| **Owns tables** | — |
+
+## Skills
+
+These skills are seeded into `agent_skills` when the module is enabled and exposed via MCP.
+External operators (FlowPilot, OpenClaw, Claude Desktop, custom MCP clients) can call them directly.
+
+| Skill | Scope | Description |
+|-------|-------|-------------|
+| `transfer_stock` | internal | Move stock between two locations (e.g. WH/MAIN → WH/PRODUCTION). Use when: relocating goods, fulfilling internal pick lists, or moving items to scrap. NOT for: receiving from vendor (use receive_go… |
+| `reserve_stock` | internal | Soft-reserve quantity at a location for an MO or sales order. Decrements available stock without moving it. Use when: confirming an MO, allocating stock to a sales order. NOT for: physically moving… |
+| `cancel_reservation` | internal | Release a previously reserved quantity back to available stock. Use when: an MO or SO is cancelled. Idempotent on already-cancelled reservations. |
+| `consume_reservation` | internal | Convert a reservation into an actual stock-out: moves the reserved qty out of the source location to a destination (default WH/CUSTOMERS). Use when: shipping the SO or finishing the MO consumption.… |
+| `adjust_quant` | internal | Manual stock adjustment at a specific location (positive or negative delta). Use when: stocktake correction, breakage, or initial seed. NOT for: vendor receipts (use receive_goods). |
+| `procurement_run` | internal | Run the MRP scheduler: scans all active reorder rules, computes virtual stock (on_hand − reserved + incoming PO), and creates pending procurement_suggestions for products below min_qty. Skips produ… |
+| `approve_procurement_suggestion` | internal | Materialize a pending procurement suggestion into a real Purchase Order (buy) or Manufacturing Order (manufacture). Use when: admin/agent has reviewed a suggestion and wants to act on it. Admin-only. |
+| `reject_procurement_suggestion` | internal | Reject a pending procurement suggestion with an optional reason. Admin-only. Use when: buyer declines an auto-generated reorder suggestion / "reject procurement" / "avvisa förslag". NOT for: approv… |
+| `allocate_picking` | both | Create a pick-list for a paid order: generates a picking_order, reserves stock per order line, and flags stockouts. Idempotent — reuses existing open picking_order for the same order. Use when: an … |
+| `confirm_pick` | both | Operator confirms a single pick line: records picked quantity and optional lot/serial. Auto-advances the picking_order status when all lines are picked or short. Use when: warehouse operator scans/… |
+| `ship_picking` | both | Ship a fully-picked picking_order: consumes reservations into real outbound stock_moves, sets order.status=shipped, emits picking.shipped event with tracking info. Use when: package leaves the ware… |
+| `cancel_picking` | both | Cancel an open picking_order and release all its reservations. Use when: order is cancelled or stock is unavailable. Idempotent. |
+| `inventory_valuation_report` | internal | Stock valuation report: on-hand quantity, average unit cost and total value per product from the valuation layers (FIFO/average costing). Use when: reviewing inventory value for the balance sheet, … |
+| `allocate_landed_cost` | internal | Allocate freight/duty/customs onto a receipt: distributes the amount across the valuation layers of a purchase receipt (by value or quantity), raising unit costs, and posts Dt 1460 / Cr 5710. Use w… |
+| `inventory_gl_reconciliation` | internal | Reconciliation check: does GL account 1460 tie out to the inventory valuation layers? Returns both balances, the difference, and how much is explained by non-purchase receipts. Use when: month-end … |
+| `manage_inventory_count` | internal | Run a physical cycle count: open a count for a location, snapshot system quantities, record counted quantities, and post variances to stock. Use when: stocktake, periodic cycle count, reconciling o… |
+
+## Module API Contract
+
+**Actions:** `check_stock`, `list_low_stock`, `get_movements`
+
+**Input fields:** `action`, `product_id`, `threshold`
+
+**Output fields:** `success`, `message`
+
+## Used in Processes
+
+This module participates in the following end-to-end business processes:
+
+- [order-to-delivery](../processes/order-to-delivery.md)
+- [procure-to-pay](../processes/procure-to-pay.md)
+
+## File Map
+
+| Purpose | Path |
+|---------|------|
+| Module definition | `src/lib/modules/inventory-module.ts` |
+| Hook | `src/hooks/useInventory.ts` |
+| Admin page | `src/pages/admin/InventoryPage.tsx` |
+
+## Contributing
+
+To enhance this module, see [Contributing Guide](../contributing/contributing.md).
+
+Key rules:
+- Follow `ModuleDefinition<I, O>` contract pattern
+- All schema changes require idempotent migrations
+- Skills must be self-describing ([Law 2](../concepts/openclaw-law.md))
+- Blocks are interfaces, not pipelines ([Law 3](../concepts/openclaw-law.md))
+- New skills must pass the [Agent Contract Integrity](../../mem/architecture/agent-contract-integrity.md) checklist (`bun run lint:skills`)
+
+---
+
+*This file is auto-generated by `scripts/generate-module-docs.ts`. Do not edit manually — re-run the script after changing the module definition.*
